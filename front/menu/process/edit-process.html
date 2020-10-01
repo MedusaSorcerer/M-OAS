@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>流程编辑</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/okadmin.css">
+    <style>
+        #content {padding: 10px; border: 1px solid #d4d4d4;}
+        #content .ok {color: white; background: green;}
+        #content .no {color: white; background: red;}
+        #content div {margin-left: 20px;}
+    </style>
+</head>
+<body style="padding: 30px">
+<div class="ok-body">
+    <div class="ok-body-breadcrumb">
+        <a class="layui-btn layui-btn-sm" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon layui-icon-refresh"></i>
+        </a>
+    </div>
+    <form class="layui-form ok-form" lay-filter="filter">
+        <div class="layui-form-item">
+            <label class="layui-form-label">标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">分类</label>
+            <div class="layui-input-block">
+                <select name="protype">
+                    <option value="0">堡垒机</option>
+                    <option value="1">考勤</option>
+                    <option value="2">网络开墙</option>
+                    <option value="3">其它</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">审核</label>
+            <div class="layui-input-block">
+                <input type="text" name="at_leader" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">申请描述</label>
+            <div class="layui-input-block">
+                <textarea id="demand" name="demand" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">审批结果</label>
+            <div class="layui-input-block" id="content">
+            </div>
+        </div>
+        <div class="layui-form-item" id="button" style="display: none">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn layui-btn-danger" lay-submit lay-filter="del">撤回申请</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    let initData;
+
+    function initForm(data) {
+        let jsonString = JSON.stringify(data);
+        initData = JSON.parse(jsonString);
+        if (initData.status <= 2) {
+            document.getElementById('button').setAttribute('style', 'display: block;');
+        }
+        var content = '';
+        var jsonContent = initData.content;
+        for (var i = 0; i < jsonContent.length; i++) {
+            content += '<strong>' + jsonContent[i][0] + '</strong> <span class="' + jsonContent[i][1] + '">' + (jsonContent[i][1] === 'ok' ? '同意' : '拒绝') + '</span>' +
+                '<div>' + jsonContent[i][2] + '</div>'
+        }
+        document.getElementById('content').innerHTML = content;
+    }
+
+    layui.use(["element", "form", "laydate", "okLayer", "okUtils", "okMock"], function () {
+        var form = layui.form;
+        var okLayer = layui.okLayer;
+        var okUtils = layui.okUtils;
+        var okMock = layui.okMock;
+        form.val("filter", initData);
+
+        form.on("submit(del)", function () {
+            okLayer.confirm("确定撤回流程？", function (index) {
+                layer.close(index);
+                okUtils.ajax(okMock.api.submitProcess + '/' + initData.id, "delete").done(function () {
+                    okLayer.greenTickMsg("撤回成功", function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+                return false;
+            });
+        });
+    })
+</script>
+</body>
+</html>

@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>用户列表</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 ok-search">
+            <input class="layui-input" placeholder="搜索" autocomplete="off" name="search">
+            <button class="layui-btn" lay-submit="" lay-filter="search">
+                <i class="layui-icon">&#xe615;</i>
+            </button>
+        </form>
+    </div>
+    <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script src="./user.js"></script>
+<script type="text/html" id="toolbarTpl">
+    <div class="layui-btn-container">
+        <button class="layui-btn layui-btn-sm layui-btn-normal" lay-event="batchEnabled">批量启用</button>
+        <button class="layui-btn layui-btn-sm layui-btn-warm" lay-event="batchDisabled">批量停用</button>
+        <button class="layui-btn layui-btn-sm layui-btn-danger" lay-event="batchDel">批量删除</button>
+        <button class="layui-btn layui-btn-sm" lay-event="add">添加用户</button>
+    </div>
+</script>
+<script type="text/html" id="operationTpl">
+    <a href="javascript:" title="编辑" lay-event="edit"><i class="layui-icon">&#xe642;</i></a>
+    <a href="javascript:" title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>
+</script>
+<script type="text/html" id="statusTpl">
+    {{#  if(d.is_active == true){ }}
+    <span class="layui-btn layui-btn-normal layui-btn-xs">已启用</span>
+    {{#  } else if(d.is_active == false) { }}
+    <span class="layui-btn layui-btn-warm layui-btn-xs">已停用</span>
+    {{#  } }}
+</script>
+</body>
+</html>

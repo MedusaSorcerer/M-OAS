@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>系统设置</title>
+    <link rel="stylesheet" href="../../css/oksub.css">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+    <script type="text/javascript" src="../../lib/jsencrypt/jsencrypt.min.js"></script>
+</head>
+<body>
+<div class="layui-card-body ok-setting">
+    <form class="layui-form system-setting" lay-filter="filter">
+        <div class="user_left">
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件服务</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="email-address" placeholder="请输入邮件服务地址">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件账号</label>
+                <div class="layui-input-block">
+                    <input type="text" class="layui-input" name="system-email" placeholder="请输入系统提醒邮件账号">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">邮件密码</label>
+                <div class="layui-input-block">
+                    <input type="password" class="layui-input" name="system-email-pwd" placeholder="请输入系统提醒邮件密码" value="HiddenPassword">
+                </div>
+            </div>
+            <div class="layui-form-item">
+                <label class="layui-form-label">工位录入</label>
+                <div class="layui-input-block">
+                    <textarea name="workplace" required lay-verify="required|workplace" placeholder="请输入" class="layui-textarea" style="min-height: 260px"></textarea>
+                    <span style="color: red"><i class="layui-icon">&#xe607;</i>工位数据修改可能会影响到数据展示问题，请谨慎操作！</span>
+                </div>
+            </div>
+        </div>
+        <div class="layui-form-item" style="margin-left: 5%;">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit="" lay-filter="changeUser">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script type="text/javascript" src="../../lib/layui/layui.js"></script>
+<script>
+    let public_key;
+
+    layui.use(['form', 'okMock', 'okUtils', 'okLayer'], function () {
+        let form = layui.form;
+        let okUtils = layui.okUtils;
+        let okMock = layui.okMock;
+
+        okUtils.ajax(okMock.api.systemSetting, "get").done(function (response) {
+            form.val("filter", response.data);
+            form.render('select');
+            okLoading.close();
+        });
+
+        okUtils.ajax(okMock.api.public, "get").done(function (response) {
+            public_key = response.data
+        });
+
+        form.verify({
+            workplace: function (value) {
+                try {
+                    JSON.parse(value)
+                } catch (d) {
+                    return "工位数据不规范，无法提交";
+                }
+            },
+        });
+
+        form.on("submit(changeUser)", function (data) {
+            var jsencrypt = new JSEncrypt();
+            jsencrypt.setPublicKey(public_key);
+            var params = {
+                'email-address': data.field['email-address'],
+                'system-email': data.field['system-email'],
+                'system-email-pwd': jsencrypt.encrypt(data.field['system-email-pwd']),
+                'workplace': data.field['workplace'],
+            };
+            okUtils.ajax(okMock.api.systemSetting, "put", params, true).done(function () {
+                okUtils.tableSuccessMsg('提交成功', function () {
+                    setTimeout(function () {
+                        window.location.reload()
+                    }, 500);
+                });
+            }).fail(function (error) {
+                console.log(error)
+            });
+            return false;
+        });
+    });
+</script>
+</body>
+</html>

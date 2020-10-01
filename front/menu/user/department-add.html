@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>新增用户</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+    <form class="layui-form ok-form" lay-filter="filter">
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门名称</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" autocomplete="off" class="layui-input" required lay-verify="required" placeholder="请输入部门名称">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">部门负责人</label>
+            <div class="layui-input-block">
+                <select id="leader" name="leader">
+                    <option value>请选择部门负责人</option>
+                </select>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" id="commit" lay-submit lay-filter="commit">立即提交</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    layui.use(["element", "form", "laydate", "okUtils", "okMock", 'okLayer'], function () {
+        let form = layui.form;
+        let okUtils = layui.okUtils;
+        let okMock = layui.okMock;
+        let okLayer = layui.okLayer;
+
+        okUtils.ajax(okMock.api.listUser, "get").done(function (response) {
+            for (var val of response.data) {
+                document.getElementById('leader').append(new Option(val.get_full_name, val.id));
+            }
+            form.render('select');
+        }).fail(function (error) {
+            console.log(error);
+        });
+
+        form.on("submit(commit)", function (data) {
+            okUtils.ajax(okMock.api.department, "post", data.field).done(function () {
+                okLayer.greenTickMsg("新增成功", function () {
+                    parent.layer.close(parent.layer.getFrameIndex(window.name));
+                });
+            }).fail(function (error) {
+                console.log(error);
+            });
+            return false;
+        });
+
+        okLoading.close();
+    })
+</script>
+</body>
+</html>

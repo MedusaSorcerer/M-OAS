@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en" class="page-fill">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="shortcut icon" href="../images/favicon.ico" type="image/x-icon"/>
+    <link rel="stylesheet" href="../css/oksub.css"/>
+    <script src="../lib/jsencrypt/jsencrypt.min.js"></script>
+</head>
+<body class="page-fill">
+<div class="page-fill" id="login">
+    <form class="layui-form">
+        <div class="login_face"><img src="../images/logo.png"></div>
+        <div class="layui-form-item input-item">
+            <label for="username">用户名</label>
+            <input type="text" lay-verify="required" name="username" placeholder="请输入账号" autocomplete="off" id="username" class="layui-input">
+        </div>
+        <div class="layui-form-item input-item">
+            <label for="password">密码</label>
+            <input type="password" lay-verify="required|password" name="password" placeholder="请输入密码" autocomplete="off" id="password" class="layui-input">
+        </div>
+        <div class="layui-form-item input-item captcha-box">
+            <label for="captcha">验证码</label>
+            <input type="text" lay-verify="required|captcha" name="captcha" placeholder="请输入验证码" autocomplete="off" id="captcha" maxlength="4" class="layui-input">
+            <div class="img ok-none-select" id="captchaImg"></div>
+        </div>
+        <div class="layui-form-item">
+            <button class="layui-btn layui-block" lay-filter="login" lay-submit="">登录</button>
+        </div>
+        <div class="login-link">
+        </div>
+    </form>
+</div>
+<script src="../lib/layui/layui.js"></script>
+<script>
+    layui.use(["form", "okGVerify", "okUtils", "okLayer", "okMock"], function () {
+        let form = layui.form;
+        let $ = layui.jquery;
+        let okGVerify = layui.okGVerify;
+        let okUtils = layui.okUtils;
+        let okMock = layui.okMock;
+        let okLayer = layui.okLayer;
+        let verifyCode = new okGVerify("#captchaImg");
+        let public_key = ""
+        form.verify({
+            captcha: function (val) {
+                if (verifyCode.validate(val) !== "true") {
+                    $('#captcha')[0].value = null;
+                    verifyCode.refresh();
+                    return verifyCode.validate(val)
+                }
+            }
+        });
+        okUtils.ajax(okMock.api.public, "get", null, null, false).done(function (response) {
+            if (response.status === 200) {
+                public_key = response.data
+            }
+        })
+        form.on("submit(login)", function (data) {
+            let params = {};
+            params['username'] = data.field.username;
+            var jsencrypt = new JSEncrypt();
+            jsencrypt.setPublicKey(public_key);
+            params['password'] = jsencrypt.encrypt(data.field.password);
+            okUtils.ajax(okMock.api.login, "post", params, true).done(function (response) {
+                okLayer.greenTickMsg("登录成功", function () {
+                    if (response.status === 200) {
+                        okUtils.local("M&OAS-token", response.data.token);
+                        okUtils.local("M&OAS-fullname", response.data['fullname']);
+                        window.location = "../index.html";
+                    }
+                })
+            }).fail(function () {
+                $('#captcha')[0].value = null;
+                verifyCode.refresh()
+            });
+            return false;
+        });
+        $("#login .input-item .layui-input").click(function (e) {
+            e.stopPropagation();
+            $(this).addClass("layui-input-focus").find(".layui-input").focus();
+        });
+        $("#login .layui-form-item .layui-input").focus(function () {
+            $(this).parent().addClass("layui-input-focus");
+        });
+        $("#login .layui-form-item .layui-input").blur(function () {
+            $(this).parent().removeClass("layui-input-focus");
+            if ($(this).val() != "") {
+                $(this).parent().addClass("layui-input-active");
+            } else {
+                $(this).parent().removeClass("layui-input-active");
+            }
+        })
+    });
+</script>
+</body>
+</html>

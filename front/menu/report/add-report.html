@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>日报填报</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/okadmin.css">
+</head>
+<body style="padding: 30px">
+<div class="ok-body">
+    <div class="ok-body-breadcrumb">
+        <a class="layui-btn layui-btn-sm" href="javascript:location.replace(location.href);" title="刷新">
+            <i class="layui-icon layui-icon-refresh"></i>
+        </a>
+    </div>
+    <form class="layui-form ok-form" lay-filter="filter">
+        <div class="layui-form-item">
+            <label class="layui-form-label">填报人</label>
+            <div class="layui-input-block">
+                <input type="text" name="person" autocomplete="off" class="layui-input" disabled>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">日报时间</label>
+            <div class="layui-input-block">
+                <input type="text" class="layui-input" id="date" name="date">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">日报信息</label>
+            <div class="layui-input-block">
+                <textarea id="content" name="content" class="layui-textarea"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item" id="button">
+            <div class="layui-input-block">
+                <button type="button" class="layui-btn" lay-submit lay-filter="del">日报填报</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    let initData;
+
+    layui.use(["element", "form", "laydate", "okLayer", "okUtils", "okMock", "laydate"], function () {
+        var form = layui.form;
+        var okLayer = layui.okLayer;
+        var okUtils = layui.okUtils;
+        var okMock = layui.okMock;
+        var laydate = layui.laydate;
+
+        function init(date) {
+            okUtils.ajax(okMock.api.report + '/' + date, "get").done(function (response) {
+                form.val("filter", response.data);
+                initData = response.data;
+            }).fail(function (error) {
+                console.log(error)
+            });
+        }
+
+        laydate.render({
+            elem: '#date',
+            value: new Date(),
+            done: function (value) {
+                init(value);
+            }
+        })
+
+        init(form.val('filter').date);
+
+        form.on("submit(del)", function (data) {
+            if (initData.id === null) {
+                okUtils.ajax(okMock.api.report, "post", data.field).done(function () {
+                    okLayer.greenTickMsg("填报成功", function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+            } else {
+                okUtils.ajax(okMock.api.report + '/' + initData.id, "put", data.field).done(function () {
+                    okLayer.greenTickMsg("更新日报成功", function () {
+                        parent.layer.close(parent.layer.getFrameIndex(window.name));
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+            }
+            return false;
+        });
+    })
+</script>
+</body>
+</html>
