@@ -8,7 +8,7 @@ from applications.user.models import UserModel
 class ReportModel(models.Model):
     person = models.ForeignKey(UserModel, on_delete=models.CASCADE)
     content = models.TextField()
-    date = models.DateField(auto_now_add=True)
+    date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'moas_report'

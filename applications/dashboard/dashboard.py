@@ -1,22 +1,64 @@
 #!/usr/bin/env python
 # _*_ Coding: UTF-8 _*_
+import datetime
+
+from django.db import connection
+from django.db.models import Count
+
+from applications.process.models import ProcessModel
+from applications.report.models import ReportModel
+from applications.user.models import UserModel
 from lib import m_rest_framework as rest
+
+
+def overview():
+    return [
+        ProcessModel.objects.count(),
+        ReportModel.objects.count(),
+        65,
+        UserModel.objects.count(),
+    ]
+
+
+def _overview_detail(model, field, datetime_=True):
+    select, day, result, today = (
+        {'day': connection.ops.date_trunc_sql('day', field)},
+        (datetime.datetime.now() + datetime.timedelta(days=-6)).date(),
+        [0, 0, 0, 0, 0, 0, 0],
+        datetime.datetime.now().date(),
+    )
+    queryset = model.objects.filter(**{f'{field}__gte': str(day) + (' 00:00:00' if datetime_ else '')}).extra(select=select).values('day').annotate(count=Count('id')).order_by('day')
+    for i in queryset:
+        result[(today - i['day']).days] = i['count']
+    return result[::-1]
+
+
+def overview_detail():
+    return {
+        'process': _overview_detail(ProcessModel, 'create_time'),
+        'report': _overview_detail(ReportModel, 'date'),
+        'repository': [5, 10, 3, 3, 0, 5, 1],
+        'user': _overview_detail(UserModel, 'date_joined'),
+    }
+
+
+def useractive():
+    return _overview_detail(UserModel, 'last_login')
+
+
+def attendance():
+    return [
+        {'name': '正常', 'value': 23},
+        {'name': '早退', 'value': 1},
+        {'name': '迟到', 'value': 1},
+    ]
 
 
 class DashboardView(rest.APIView):
     def get(self, request, *args, **kwargs):
         return rest.Response(
-            overview=[34, 103, 65, 101],
-            overview_detail={
-                'process': [1, 2, 4, 8, 4, 1, 4],
-                'report': [3, 10, 3, 2, 1, 9, 0],
-                'repository': [5, 10, 3, 3, 0, 5, 1],
-                'user': [0, 1, 1, 3, 1, 0, 0]
-            },
-            useractive=[22, 40, 64, 13, 55, 20, 50],
-            attendance=[
-                {'name': '正常', 'value': 23},
-                {'name': '早退', 'value': 1},
-                {'name': '迟到', 'value': 1},
-            ]
+            overview=overview(),
+            overview_detail=overview_detail(),
+            useractive=useractive(),
+            attendance=attendance(),
         )

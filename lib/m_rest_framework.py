@@ -1,17 +1,19 @@
 #!/usr/bin/env python
 # _*_ Coding: UTF-8 _*_
+import datetime
 import traceback
 
+from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import routers
-from rest_framework import views, exceptions, response, viewsets, permissions, status, serializers, mixins, filters
+from rest_framework import views, exceptions, response, viewsets, permissions, status, serializers, filters
 from rest_framework.pagination import PageNumberPagination
 from rest_framework_jwt.serializers import JSONWebTokenSerializer, RefreshJSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import JSONWebTokenAPIView
 
-APIView = views.APIView
-GenericViewSet = viewsets.GenericViewSet
+from applications.user.models import UserModel
+
 AllowAny = permissions.AllowAny
 NotAuthenticated = exceptions.NotAuthenticated
 HTTP_401_UNAUTHORIZED = status.HTTP_401_UNAUTHORIZED
@@ -29,6 +31,26 @@ ValidationError = serializers.ValidationError
 EmailField = serializers.EmailField
 IntegerField = serializers.IntegerField
 HTTP_200_OK = status.HTTP_200_OK
+
+
+class APIView(views.APIView):
+    def dispatch(self, request, *args, **kwargs):
+        super().dispatch(request, *args, **kwargs)
+        if isinstance(user := request.user, UserModel):
+            # field(last_login) -> field(last_activity_time)
+            difference = datetime.datetime.now() - user.last_login
+            if difference.days > 0 or difference.seconds >= 30 * 60:
+                user.last_login = timezone.now()
+                user.save()
+        return self.response
+
+
+class GenericAPIView(APIView, viewsets.generics.GenericAPIView):
+    ...
+
+
+class GenericViewSet(viewsets.ViewSetMixin, GenericAPIView):
+    ...
 
 
 class RetrieveModelMixin:
