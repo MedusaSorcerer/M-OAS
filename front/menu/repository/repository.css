@@ -1,0 +1,17 @@
+#repository {
+    margin: 30px;
+}
+
+#repository .update_author {
+    margin: 10px 0 10px 20px;
+    color: #a09f9f;
+}
+
+#repository .title {
+    margin-top: 10px;
+}
+
+#repository .content {
+    margin: 20px;
+    text-indent: 2em;
+}

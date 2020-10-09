@@ -53,11 +53,23 @@ layui.use(["okUtils", "okCountUp", "okMock"], function () {
         okUtils.echartsResize([echIncome, echGoods, echBlogs, echUser]);
     }
 
+    function getDay() {
+        var result = [];
+        for (var i = 0; i < 7; i++) {
+            var day = new Date();
+            day.setTime(day.getTime() - (24 * 60 * 60 * 1000) * i);
+            result.push((day.getMonth() + 1) + "-" + day.getDate())
+        }
+        return result.reverse();
+    }
+
     function initUserActiveTodayChart(data) {
         var userActiveTodayChart = echarts.init($("#userActiveTodayChart")[0], "themez");
         var userActiveTodayChartOption = {
             color: "#03a9f3",
-            xAxis: {type: 'category', data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']},
+            xAxis: {
+                type: 'category', data: getDay()
+            },
             yAxis: {type: 'value'},
             series: [{data: data, type: 'bar'}]
         };

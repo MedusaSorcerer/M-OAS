@@ -25,6 +25,7 @@ layui.define([], function (exprots) {
             report: service + "/api/" + version + "/report/report",
             batch: service + "/api/" + version + "/user/batch",
             department: service + "/api/" + version + "/user/department",
+            repository: service + "/api/" + version + "/repository/repository",
         }
     };
     exprots("okMock", okMock);
