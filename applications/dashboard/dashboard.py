@@ -2,6 +2,7 @@
 # _*_ Coding: UTF-8 _*_
 import datetime
 
+from django.core.cache import cache
 from django.db import connection
 from django.db.models import Count
 
@@ -20,20 +21,19 @@ def overview():
     ]
 
 
-def _overview_detail(model, field, datetime_=True):
-    select, day, result, today = (
-        {'day': connection.ops.date_trunc_sql('day', field)},
-        (datetime.datetime.now() + datetime.timedelta(days=-6)).date(),
-        [0, 0, 0, 0, 0, 0, 0],
-        datetime.datetime.now().date(),
-    )
-    queryset = model.objects.filter(**{f'{field}__gte': str(day) + (' 00:00:00' if datetime_ else '')}).extra(select=select).values('day').annotate(count=Count('id')).order_by('day')
-    for i in queryset:
-        result[(today - i['day']).days] = i['count']
-    return result[::-1]
-
-
 def overview_detail():
+    def _overview_detail(model, field, datetime_=True):
+        select, day, result, today = (
+            {'day': connection.ops.date_trunc_sql('day', field)},
+            (datetime.datetime.now() + datetime.timedelta(days=-6)).date(),
+            [0, 0, 0, 0, 0, 0, 0],
+            datetime.datetime.now().date(),
+        )
+        queryset = model.objects.filter(**{f'{field}__gte': str(day) + (' 00:00:00' if datetime_ else '')}).extra(select=select).values('day').annotate(count=Count('id')).order_by('day')
+        for i in queryset:
+            result[(today - i['day']).days] = i['count']
+        return result[::-1]
+
     return {
         'process': _overview_detail(ProcessModel, 'create_time'),
         'report': _overview_detail(ReportModel, 'date'),
@@ -43,7 +43,13 @@ def overview_detail():
 
 
 def useractive():
-    return _overview_detail(UserModel, 'last_login')
+    _ = datetime.datetime.now()
+    result = list()
+    for i in range(7):
+        sign = (_ + datetime.timedelta(days=-i)).strftime('%Y%m%d')
+        dcache = cache.get(f'M&OAS-User-Active-Dcacch-{sign}', [])
+        result.append(len(set(dcache)))
+    return sorted(result)
 
 
 def attendance():

@@ -22,6 +22,7 @@ from applications.process import process
 from applications.report import report
 from applications.setting import setting
 from applications.user import user
+from applications.repository import repository
 from conf.conf import SERVICE_VERSION
 from lib import m_rest_framework as rest
 
@@ -39,6 +40,7 @@ router.register(f'api/v{SERVICE_VERSION}/attendance/abnormalAttendance', attenda
 router.register(f'api/v{SERVICE_VERSION}/attendance/holidayHandle', attendance.HolidayHandleView, basename='holidayHandle')
 router.register(f'api/v{SERVICE_VERSION}/report/report', report.ReportView)
 router.register(f'api/v{SERVICE_VERSION}/user/department', user.DepartmentView)
+router.register(f'api/v{SERVICE_VERSION}/repository/repository', repository.RepositoryView)
 
 urlpatterns = [
     path(f'api/v{SERVICE_VERSION}/login', user.LoginView.as_view()),

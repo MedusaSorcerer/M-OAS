@@ -12,5 +12,5 @@ MYSQL_PASSWORD = 'medusa@moas'
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = 'moas@admin'
 ADMIN_EMAIL = 'admin@moas.com'
-SERVICE_VERSION = '1.0.0'
+SERVICE_VERSION = '1.1.0'
 SERVICE_DEBUG = True

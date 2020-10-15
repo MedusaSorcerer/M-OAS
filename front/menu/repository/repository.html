@@ -2,121 +2,33 @@
 <html>
 <head>
     <meta charset="utf-8">
-    <title>日志列表</title>
+    <title>知识库</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
     <link rel="stylesheet" href="../../css/oksub.css">
     <link rel="stylesheet" href="repository.css">
+    <link rel="stylesheet" href="markdown.css">
 </head>
 <body>
 <div class="ok-body">
     <div class="layui-row">
         <form class="layui-form layui-col-md12 ok-search">
-            <input class="layui-input" placeholder="请输入标题或作者" autocomplete="off" name="title">
-            <button class="layui-btn" lay-submit="" lay-filter="search">
+            <input class="layui-input" id="search" placeholder="请输入标题或作者" autocomplete="off" name="search">
+            <button class="layui-btn" lay-submit="search" lay-filter="search">
                 <i class="layui-icon layui-icon-search"></i>
             </button>
+            <button class="layui-btn layui-btn-normal" type="button" lay-active="add" style="float: right; margin-right: 60px">发表文章</button>
         </form>
     </div>
     <div id="repository">
-        <ul>
-            <li>
-                <a onclick="console.log('as')">
-                    <h2 class="title">TTitle</h2>
-                    <p class="update_author">2020-10-01 04:00:00 medusa</p>
-                    <div class="content">
-                        zsdfasdfasodijgoasjpdgaosdg
-
-                        asdiogoasd
-                        asdgoiasd
-                        asdigoasdg
-                        asdgas
-                        asdgasdg
-                        asdgasdg
-                        asdga
-                        sadsg
-                        asdg
-                        adsg
-                        adsg
-                        adsg
-                        adsg
-                        asdg
-                        asdg
-                        asdg
-                        asdg
-                    </div>
-                </a>
-            </li>
-            <hr>
-            <li>
-                <a onclick="console.log()">
-                    <h2 class="title">TTitle</h2>
-                    <p class="update_author">2020-10-01 04:00:00 medusa</p>
-                    <div class="content">
-                        zsdfasdfasodijgoasjpdgaosdg
-
-                        asdiogoasd
-                        asdgoiasd
-                        asdigoasdg
-                        asdgas
-                        asdgasdg
-                        asdgasdg
-                        asdga
-                        sadsg
-                        asdg
-                        adsg
-                        adsg
-                        adsg
-                        adsg
-                        asdg
-                        asdg
-                        asdg
-                        asdg
-                    </div>
-                </a>
-            </li>
+        <div class="layui-none">无数据</div>
+        <ul id="content-ul">
         </ul>
     </div>
     <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
 </div>
 <script src="../../lib/layui/layui.js"></script>
-<script>
-    layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", "okMock"], function () {
-        var table = layui.table;
-        var form = layui.form;
-        var okLayer = layui.okLayer;
-        var okUtils = layui.okUtils;
-        var okMock = layui.okMock;
-
-        okUtils.ajax(okMock.api.repository, 'get').done(function (response) {
-            for (var val of response.data) {
-            }
-            form.render('select');
-        }).fail(function (error) {
-            console.log(error);
-        });
-
-        form.on("submit(search)", function (data) {
-            layui.reload({
-                where: data.field,
-                page: {curr: 1}
-            });
-            return false;
-        });
-
-        table.on("toolbar(tableFilter)", function (obj) {
-            switch (obj.event) {
-                case "add":
-                    add();
-                    break;
-            }
-        });
-
-        function add() {
-            okLayer.open("添加文章", "article-add.html", "90%", "90%", null, function () {
-                layui.reload()
-            })
-        }
-    })
-</script>
+<script src="../../lib/showdown-1.9.1/dist/showdown.min.js"></script>
+<script src="repository.js"></script>
 </body>
 </html>

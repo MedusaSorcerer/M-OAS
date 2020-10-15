@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>发表文章</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+</head>
+<body>
+<div class="ok-body">
+    <form class="layui-form ok-form" lay-filter="filter">
+        <div class="layui-form-item">
+            <label class="layui-form-label">文章标题</label>
+            <div class="layui-input-block">
+                <input type="text" name="title" autocomplete="off" class="layui-input" required lay-verify="required" placeholder="请输入文章标题">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">文章内容</label>
+            <div class="layui-input-block">
+                <textarea type="text" name="content" autocomplete="off" class="layui-input" style="max-width: 100%; min-height: 300px" placeholder="请输入文章内容"></textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" id="commit" lay-submit lay-filter="commit">立即发布</button>
+                <button class="layui-btn layui-btn-normal" id="draft" lay-submit lay-filter="draft">保存至草稿</button>
+                <button class="layui-btn layui-btn-primary" id="preview" lay-submit lay-filter="preview">预览文本</button>
+            </div>
+        </div>
+    </form>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    layui.use(["element", "form", "laydate", "okUtils", "okMock", 'okLayer'], function () {
+        let form = layui.form;
+        let okUtils = layui.okUtils;
+        let okMock = layui.okMock;
+        let okLayer = layui.okLayer;
+
+        form.on("submit(commit)", function (data) {
+            var params = data.field;
+            params['is_active'] = params['is_active'] === 'yes';
+            params['head_of_department'] = params['head_of_department'] === 'yes';
+            params['work_management'] = params['work_management'] === 'yes';
+            params['is_admin'] = params['is_admin'] === '1';
+
+            okUtils.ajax(okMock.api.repository, "post", params).done(function () {
+                okLayer.greenTickMsg("发布成功", function () {
+                    parent.layer.close(parent.layer.getFrameIndex(window.name));
+                });
+            }).fail(function (error) {
+                console.log(error);
+            });
+            return false;
+        });
+
+        okLoading.close();
+    })
+</script>
+</body>
+</html>

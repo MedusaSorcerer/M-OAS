@@ -3,6 +3,7 @@
 import datetime
 import traceback
 
+from django.core.cache import cache
 from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import routers
@@ -37,6 +38,11 @@ class APIView(views.APIView):
     def dispatch(self, request, *args, **kwargs):
         super().dispatch(request, *args, **kwargs)
         if isinstance(user := request.user, UserModel):
+            # django cache field -> user active number
+            sign = datetime.datetime.now().strftime("%Y%m%d")
+            dcache = cache.get(f'M&OAS-User-Active-Dcacch-{sign}', [])
+            dcache.append(user.id)
+            cache.set(f'M&OAS-User-Active-Dcacch-{sign}', list(set(dcache)), timeout=7 * 24 * 60 * 60)
             # field(last_login) -> field(last_activity_time)
             difference = datetime.datetime.now() - user.last_login
             if difference.days > 0 or difference.seconds >= 30 * 60:

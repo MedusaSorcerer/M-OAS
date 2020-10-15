@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # _*_ Coding: UTF-8 _*_
 import html
+import re
 from datetime import datetime
 
 from lib import m_rest_framework as rest
@@ -34,7 +35,10 @@ class ReportView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin
 
     def list(self, request, *args, **kwargs):
         date = datetime.now().strftime('%Y-%m-%d') if not request.query_params.get('date') else request.query_params.get('date')
-        self.queryset = self.queryset.filter(date__exact=date)
+        if not re.match(r'\d{4}-\d{2}-\d{2}', date): raise rest.ParseError(detail='时间格式错误，如 "2020-10-01" 格式')
+        self.queryset = self.queryset.filter(
+            date__year=date.split('-')[0], date__month=date.split('-')[1], date__day=date.split('-')[2]
+        )
         return super().list(request, *args, **kwargs)
 
     def update(self, request, *args, **kwargs):
@@ -48,14 +52,17 @@ class ReportView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin
         return super().update(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
-        if self.queryset.filter(person_id__exact=request.user.id, date__exact=datetime.now().strftime('%Y-%m-%d')):
+        date = datetime.now().strftime('%Y-%m-%d')
+        if self.queryset.filter(person_id__exact=request.user.id, date__year=date.split('-')[0], date__month=date.split('-')[1], date__day=date.split('-')[2]):
             raise rest.ParseError(detail='无法重复创建日报内容')
         data = {'person_id': request.user.id, 'content': html.escape(str(request.data.get('content', '')))}
         ReportModel.objects.create(**data)
         return rest.Response(data=data, status=rest.HTTP_201_CREATED)
 
     def retrieve(self, request, *args, **kwargs):
-        queryset = self.queryset.filter(date__exact=kwargs.get('pk'), person_id__exact=request.user.id)
+        date = kwargs.get('pk')
+        if not re.match(r'\d{4}-\d{2}-\d{2}', date): raise rest.ParseError(detail='时间格式错误，如 "2020-10-01" 格式')
+        queryset = self.queryset.filter(date__year=date.split('-')[0], date__month=date.split('-')[1], date__day=date.split('-')[2], person_id__exact=request.user.id)
         if not queryset:
             return rest.Response(data={
                 'id': None,
