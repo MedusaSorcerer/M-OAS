@@ -28,6 +28,18 @@
     <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
 </div>
 <script src="../../lib/layui/layui.js"></script>
+<script>
+    let API;
+
+    function TOOL() {
+        return '';
+    }
+
+    layui.use(["okMock"], function () {
+        var okMock = layui.okMock;
+        API = okMock.api.repository;
+    })
+</script>
 <script src="../../lib/showdown-1.9.1/dist/showdown.min.js"></script>
 <script src="repository.js"></script>
 </body>

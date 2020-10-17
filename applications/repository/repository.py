@@ -1,5 +1,7 @@
 #!/usr/bin/env python
 # _*_ Coding: UTF-8 _*_
+import html
+
 from lib import m_rest_framework as rest
 from .models import RepositoryModel
 
@@ -26,8 +28,8 @@ class RepositoryView(rest.GenericViewSet, rest.ListModelMixin, rest.CreateModelM
 
     def create(self, request, *args, **kwargs):
         data = dict(
-            title=request.data.get('title'),
-            content=request.data.get('content'),
+            title=html.escape(request.data.get('title')),
+            content=html.escape(request.data.get('content')),
             author=request.user.id,
         )
         serializer = self.get_serializer(data=data)

@@ -1,9 +1,8 @@
-layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", "okMock"], function () {
+layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils"], function () {
     var util = layui.util;
     var form = layui.form;
     var okLayer = layui.okLayer;
     var okUtils = layui.okUtils;
-    var okMock = layui.okMock;
     var converter = new showdown.Converter();
     var dataids = [];
     var ajax_sign = true;
@@ -20,7 +19,7 @@ layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", "okMock"
                     element += ('' +
                         '<li>' +
                         '<h2 class="title">' + val.title + '</h2>' +
-                        '<p class="update_author">' + val.author_name + ' / ' + layui.util.toDateString(val.update, "yyyy-MM-dd HH:mm:ss") + '</p>' +
+                        '<p class="update_author">' + val.author_name + ' / ' + layui.util.toDateString(val.update, "yyyy-MM-dd HH:mm:ss") + TOOL(val) + '</p>' +
                         '<input type="checkbox" id="contTab_' + val.id + '" checked="checked" class="tabbed">' +
                         '<div class="content">' + converter.makeHtml(val.content) + '</div>' +
                         '<div class="content-more"><div class="gradient"></div> <label for="contTab_' + val.id + '" class="readmore">点 击 查 阅 全 文</label></div>' +
@@ -29,14 +28,19 @@ layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", "okMock"
                     element += ('' +
                         '<li>' +
                         '<h2 class="title">' + val.title + '</h2>' +
-                        '<p class="update_author">' + val.author_name + ' / ' + layui.util.toDateString(val.update, "yyyy-MM-dd HH:mm:ss") + '</p>' +
+                        '<p class="update_author">' + val.author_name + ' / ' + layui.util.toDateString(val.update, "yyyy-MM-dd HH:mm:ss") + TOOL(val) + '</p>' +
                         '<div class="content">' + converter.makeHtml(val.content) + '</div>' +
                         '</li>'
                     )
                 }
             }
         }
-        document.getElementById('content-ul').innerHTML += element;
+        let div = document.createElement('div')
+        div.innerHTML = element
+        for (var el of div.getElementsByTagName('a')) {
+            el.setAttribute('target', '_blank')
+        }
+        document.getElementById('content-ul').innerHTML += div.innerHTML;
         return ''
     }
 
@@ -47,7 +51,7 @@ layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", "okMock"
     }
 
     function ajax(params) {
-        okUtils.ajax(okMock.api.repository, 'get', params).done(function (response) {
+        okUtils.ajax(API, 'get', params).done(function (response) {
             if (response.next === null || response.next === '') {
                 ajax_sign = false;
             }
@@ -78,8 +82,11 @@ layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", "okMock"
                 window.location.reload();
             })
         },
-        detail: function (data) {
-            console.log(data)
+        edit: function (data) {
+            console.log(data.context.getAttribute('_id'))
+        },
+        del: function (data) {
+            console.log(data.context.getAttribute('_id'))
         }
     });
 
