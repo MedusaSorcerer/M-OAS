@@ -10,7 +10,7 @@ o8o        o888o `bodP'`88.  `Y8bood8P'  o88o     o8888o 8""88888P'
 ```
 **M&OAS(M & Office Automation Service)** 致力开发出完善的自动化办公服务，推崇更方便快捷的云办公环境。
 
-#### 当前版本为 `version 1.1.0`
+#### 当前版本为 `version 1.2.0`
 
 * [Juejin.im](https://juejin.im/post/6878485351153795080)
 * [Document](http://moas.medusasorcerer.com)
@@ -25,8 +25,15 @@ o8o        o888o `bodP'`88.  `Y8bood8P'  o88o     o8888o 8""88888P'
 * 知识库：各类博文帖式发布，共享个人经验和才华
 * 系统设置：个人信息设置、个人安全信息设置以及管理员可见的系统数据配置
 
+预设待开发功能点：
+
+* 常用工具：提供相关工具供使用者使用，如日志解析等
+* 项目月报：可视化项目进度百分比、本月工作完成内容、下月工作需达成目标内容
+* 角色分发：权限管控，分发不同角色以不同权限访问
+* 文档(拟)：文档管理，针对使用文档以及开发文档，或 API 文档，该功能拟用，暂不纳入开发需求
+
 ## 版本发布时间线
 
-<a href="/MedusaSorcerer/M-OAS/releases" class="link-gray-dark no-underline">
+<a href="https://github.com/MedusaSorcerer/M-OAS/releases" class="link-gray-dark no-underline">
     Releases
 </a>

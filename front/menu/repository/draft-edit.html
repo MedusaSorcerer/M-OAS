@@ -2,7 +2,7 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>发表文章</title>
+    <title>文章编辑</title>
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
     <link rel="stylesheet" href="../../css/oksub.css">
     <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
@@ -39,8 +39,29 @@
         let okMock = layui.okMock;
         let okLayer = layui.okLayer;
 
+        function getQueryString(name) {
+            var reg = new RegExp("(^|&)" + name + "=([^&]*)(&|$)");
+            var r = window.location.search.substr(1).match(reg);
+            if (r != null) {
+                return decodeURI(r[2]);
+            }
+            return '';
+        }
+
+        let id = getQueryString('id');
+
+        okUtils.ajax(okMock.api.draft + '/' + id, 'get').done(function (response) {
+            if (response.status === 200) {
+                form.val("filter", response.data);
+            } else {
+                document.getElementById('commit').className += 'layui-btn-disabled'
+            }
+        })
+
         form.on("submit(commit)", function (data) {
-            okUtils.ajax(okMock.api.repository, "post", data.field).done(function () {
+            data = data.field;
+            data.draft = false;
+            okUtils.ajax(okMock.api.draft + '/' + id, "put", data).done(function () {
                 okLayer.greenTickMsg("发布成功", function () {
                     parent.layer.close(parent.layer.getFrameIndex(window.name));
                 });
@@ -51,7 +72,9 @@
         });
 
         form.on("submit(draft)", function (data) {
-            okUtils.ajax(okMock.api.draft, "post", data.field).done(function () {
+            data = data.field;
+            data.draft = true;
+            okUtils.ajax(okMock.api.draft + '/' + id, "put", data).done(function () {
                 okLayer.greenTickMsg("保存成功", function () {
                     parent.layer.close(parent.layer.getFrameIndex(window.name));
                 });

@@ -355,3 +355,7 @@ class DepartmentView(rest.GenericViewSet, rest.ListModelMixin, rest.DestroyModel
         if user:
             user.update(department_id=obj.id, work_management=True, head_of_department=True)
         return rest.Response(status=rest.HTTP_201_CREATED, data={'name': name, 'leader': leader})
+
+
+class RoleView(rest.GenericViewSet):
+    ...

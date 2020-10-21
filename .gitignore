@@ -2,3 +2,4 @@ help/site
 .idea
 __pycache__
 .pyc
+lib/dcache/*

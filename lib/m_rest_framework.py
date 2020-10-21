@@ -44,10 +44,14 @@ class APIView(views.APIView):
             dcache.append(user.id)
             cache.set(f'M&OAS-User-Active-Dcacch-{sign}', list(set(dcache)), timeout=7 * 24 * 60 * 60)
             # field(last_login) -> field(last_activity_time)
-            difference = datetime.datetime.now() - user.last_login
-            if difference.days > 0 or difference.seconds >= 30 * 60:
+            if not user.last_login:
                 user.last_login = timezone.now()
                 user.save()
+            else:
+                difference = datetime.datetime.now() - user.last_login
+                if difference.days > 0 or difference.seconds >= 30 * 60:
+                    user.last_login = timezone.now()
+                    user.save()
         return self.response
 
 

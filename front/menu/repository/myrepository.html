@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>我的文库</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+    <link rel="stylesheet" href="../../css/oksub.css">
+    <link rel="stylesheet" href="repository.css">
+    <link rel="stylesheet" href="markdown.css">
+</head>
+<body>
+<div class="ok-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 ok-search">
+            <input class="layui-input" id="search" placeholder="请输入标题" autocomplete="off" name="search">
+            <button class="layui-btn" lay-submit="search" lay-filter="search">
+                <i class="layui-icon layui-icon-search"></i>
+            </button>
+            <div style="float: right; margin-right: 60px">
+                <button class="layui-btn layui-btn-primary" type="button" onclick="javascrtpt:window.location.href='draft.html'">草稿箱</button>
+                <button class="layui-btn layui-btn-normal" type="button" lay-active="add">发表文章</button>
+            </div>
+        </form>
+    </div>
+    <div id="repository">
+        <div class="layui-none">无数据</div>
+        <ul id="content-ul">
+        </ul>
+    </div>
+    <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script>
+    let API;
+
+    function TOOL(val) {
+        return '' +
+            '<span style="margin-left: 20px;">' +
+            '<button class="layui-btn layui-btn-xs layui-btn-radius layui-btn-primary" type="button" lay-active="edit" _id="' + val.id + '"><i class="layui-icon">&#xe642;</i></button>' +
+            '<button class="layui-btn layui-btn-xs layui-btn-radius layui-btn-danger" type="button" lay-active="del" _id="' + val.id + '"><i class="layui-icon">&#xe640;</i></button>' +
+            '</span>';
+    }
+
+    layui.use(["okMock"], function () {
+        var okMock = layui.okMock;
+        API = okMock.api.myrepository;
+    })
+</script>
+<script src="../../lib/showdown-1.9.1/dist/showdown.min.js"></script>
+<script src="repository.js"></script>
+</body>
+</html>

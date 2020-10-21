@@ -8,6 +8,7 @@ from django.db.models import Count
 
 from applications.process.models import ProcessModel
 from applications.report.models import ReportModel
+from applications.repository.models import RepositoryModel
 from applications.user.models import UserModel
 from lib import m_rest_framework as rest
 
@@ -16,20 +17,20 @@ def overview():
     return [
         ProcessModel.objects.count(),
         ReportModel.objects.count(),
-        65,
+        RepositoryModel.objects.count(),
         UserModel.objects.count(),
     ]
 
 
 def overview_detail():
-    def _overview_detail(model, field, datetime_=True):
+    def _overview_detail(model, field):
         select, day, result, today = (
-            {'day': connection.ops.date_trunc_sql('day', field)},
+            {'day': connection.ops.date_trunc_sql('day', f'`{field}`')},
             (datetime.datetime.now() + datetime.timedelta(days=-6)).date(),
             [0, 0, 0, 0, 0, 0, 0],
             datetime.datetime.now().date(),
         )
-        queryset = model.objects.filter(**{f'{field}__gte': str(day) + (' 00:00:00' if datetime_ else '')}).extra(select=select).values('day').annotate(count=Count('id')).order_by('day')
+        queryset = model.objects.filter(**{f'{field}__gte': str(day)}).extra(select=select).values('day').annotate(count=Count('id')).order_by('day')
         for i in queryset:
             result[(today - i['day']).days] = i['count']
         return result[::-1]
@@ -37,7 +38,7 @@ def overview_detail():
     return {
         'process': _overview_detail(ProcessModel, 'create_time'),
         'report': _overview_detail(ReportModel, 'date'),
-        'repository': [5, 10, 3, 3, 0, 5, 1],
+        'repository': _overview_detail(RepositoryModel, 'update'),
         'user': _overview_detail(UserModel, 'date_joined'),
     }
 
@@ -49,7 +50,7 @@ def useractive():
         sign = (_ + datetime.timedelta(days=-i)).strftime('%Y%m%d')
         dcache = cache.get(f'M&OAS-User-Active-Dcacch-{sign}', [])
         result.append(len(set(dcache)))
-    return sorted(result)
+    return result[::-1]
 
 
 def attendance():

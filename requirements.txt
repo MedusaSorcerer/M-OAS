@@ -1,2 +1,8 @@
-Django==3.1
+schedule==0.6.0
+Flask==1.1.2
+django_filter==2.2.0
+Django==3.1.1
+djangorestframework_jwt==1.11.0
+djangorestframework==3.12.1
 pycryptodome==3.9.8
+ujson

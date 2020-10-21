@@ -41,6 +41,8 @@ router.register(f'api/v{SERVICE_VERSION}/attendance/holidayHandle', attendance.H
 router.register(f'api/v{SERVICE_VERSION}/report/report', report.ReportView)
 router.register(f'api/v{SERVICE_VERSION}/user/department', user.DepartmentView)
 router.register(f'api/v{SERVICE_VERSION}/repository/repository', repository.RepositoryView)
+router.register(f'api/v{SERVICE_VERSION}/repository/myrepository', repository.MyRepositoryView)
+router.register(f'api/v{SERVICE_VERSION}/repository/draft', repository.DraftView)
 
 urlpatterns = [
     path(f'api/v{SERVICE_VERSION}/login', user.LoginView.as_view()),

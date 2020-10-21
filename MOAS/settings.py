@@ -42,7 +42,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rest_framework',
     'applications.user',
-    'applications.task',
+    'applications.tools',
     'applications.team',
     'applications.report',
     'applications.process',

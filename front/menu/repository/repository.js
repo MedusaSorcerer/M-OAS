@@ -1,8 +1,9 @@
-layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils"], function () {
+layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils", 'okMock'], function () {
     var util = layui.util;
     var form = layui.form;
     var okLayer = layui.okLayer;
     var okUtils = layui.okUtils;
+    var okMock = layui.okMock;
     var converter = new showdown.Converter();
     var dataids = [];
     var ajax_sign = true;
@@ -83,10 +84,20 @@ layui.use(["element", "table", "form", "laydate", "okLayer", "okUtils"], functio
             })
         },
         edit: function (data) {
-            console.log(data.context.getAttribute('_id'))
+            okLayer.open("文章编辑", "repository-edit.html?id=" + data.context.getAttribute('_id'), "90%", "90%", null, function () {
+                window.location.reload();
+            })
         },
         del: function (data) {
-            console.log(data.context.getAttribute('_id'))
+            okLayer.confirm("确定要删除吗？", function () {
+                okUtils.ajax(okMock.api.myrepository + '/' + data.context.getAttribute('_id'), 'delete').done(function () {
+                    layer.msg('删除成功', {icon: 1, time: 1000}, function () {
+                        window.location.reload();
+                    });
+                }).fail(function (error) {
+                    console.log(error)
+                });
+            })
         }
     });
 

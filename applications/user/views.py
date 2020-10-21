@@ -162,6 +162,12 @@ def navs(_):
                     'title': '知识库',
                     'href': 'menu/repository/repository.html',
                     'spread': False
+                },
+                {
+                    'display': True,
+                    'title': '我的文章',
+                    'href': 'menu/repository/myrepository.html',
+                    'spread': False
                 }
             ]
         },
