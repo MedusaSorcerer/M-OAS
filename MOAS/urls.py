@@ -20,9 +20,10 @@ from applications.attendance import attendance
 from applications.dashboard import dashboard
 from applications.process import process
 from applications.report import report
-from applications.setting import setting
-from applications.user import user
 from applications.repository import repository
+from applications.setting import setting
+from applications.tools import tools
+from applications.user import user
 from conf.conf import SERVICE_VERSION
 from lib import m_rest_framework as rest
 
@@ -43,6 +44,8 @@ router.register(f'api/v{SERVICE_VERSION}/user/department', user.DepartmentView)
 router.register(f'api/v{SERVICE_VERSION}/repository/repository', repository.RepositoryView)
 router.register(f'api/v{SERVICE_VERSION}/repository/myrepository', repository.MyRepositoryView)
 router.register(f'api/v{SERVICE_VERSION}/repository/draft', repository.DraftView)
+router.register(f'api/v{SERVICE_VERSION}/tools/analyze', tools.AnalyzeTool, basename='analyzeTool')
+router.register(f'api/v{SERVICE_VERSION}/tools/analyzeManagement', tools.ManagementMappingRulerView, basename='management')
 
 urlpatterns = [
     path(f'api/v{SERVICE_VERSION}/login', user.LoginView.as_view()),

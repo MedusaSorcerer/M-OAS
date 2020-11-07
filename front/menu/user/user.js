@@ -114,13 +114,13 @@ layui.use(["element", "jquery", "table", "form", "okLayer", "okUtils", "okMock"]
     }
 
     function add() {
-        okLayer.open("添加用户", "user-add.html", "90%", "90%", null, function () {
+        okLayer.open("新增员工", "user-add.html", "90%", "90%", null, function () {
             userTable.reload();
         })
     }
 
     function edit(data) {
-        okLayer.open("更新用户", "user-edit.html", "90%", "90%", function (layero) {
+        okLayer.open("更新员工", "user-edit.html", "90%", "90%", function (layero) {
             let iframeWin = window[layero.find("iframe")[0]["name"]];
             iframeWin.initData(data);
         }, function () {

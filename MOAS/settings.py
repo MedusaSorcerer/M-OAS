@@ -43,7 +43,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'applications.user',
     'applications.tools',
-    'applications.team',
+    'applications.crontab',
     'applications.report',
     'applications.process',
     'applications.setting',

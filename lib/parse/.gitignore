@@ -1,0 +1,17 @@
+*.pyc
+*.pyo
+
+.vscode/
+.cache/
+.idea/
+.tox/
+__pycache__/
+.coverage
+.pytest_cache
+parse.egg-info
+.python-version
+
+MANIFEST
+build
+dist
+.ropeproject

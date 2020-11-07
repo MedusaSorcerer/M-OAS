@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>日志分析</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link rel="stylesheet" href="../../css/oksub.css">
+    <script type="text/javascript" src="../../lib/loading/okLoading.js"></script>
+    <style>
+        .layui-form-select .layui-edge {
+            position: absolute;
+            right: 10px;
+            top: 20px;
+            margin-top: -3px;
+            cursor: pointer;
+            border-width: 6px;
+            border-top-color: #c2c2c2;
+            border-top-style: solid;
+            transition: all .3s;
+            -webkit-transition: all .3s;
+        }
+    </style>
+</head>
+<body>
+<div class="ok-body">
+    <div class="layui-row">
+        <form class="layui-form layui-col-md12 ok-search">
+            <div class="layui-inline" style="margin-left: 10px">
+                <div class="layui-unselect layui-form-select">
+                    <select id="tool" name="tool" lay-verify="" lay-filter="source">
+                        <option value="" class="layui-this">请选择一个日志源</option>
+                    </select>
+                </div>
+            </div>
+            <button class="layui-btn" lay-submit="" lay-filter="search">
+                <i class="layui-icon">&#xe615;</i>
+            </button>
+            <div style="float: right;margin-right: 60px;">
+                <button type="button" class="layui-btn layui-btn-primary" lay-active="management">解析规则管理</button>
+                <button type="button" class="layui-btn layui-btn-normal" lay-active="upload">上传日志源</button>
+            </div>
+        </form>
+    </div>
+    <table class="layui-hide" id="tableId" lay-filter="tableFilter"></table>
+</div>
+<script src="../../lib/layui/layui.js"></script>
+<script src="./analyze-log.js"></script>
+</body>
+</html>

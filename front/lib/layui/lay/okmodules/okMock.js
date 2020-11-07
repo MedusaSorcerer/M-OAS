@@ -1,5 +1,5 @@
 "use strict";
-let version = 'v1.2.0'
+let version = 'v1.3.0'
 let service = 'http://127.0.0.1:8000'
 layui.define([], function (exprots) {
     let okMock = {
@@ -28,6 +28,8 @@ layui.define([], function (exprots) {
             repository: service + "/api/" + version + "/repository/repository",
             myrepository: service + "/api/" + version + "/repository/myrepository",
             draft: service + "/api/" + version + "/repository/draft",
+            analyze: service + "/api/" + version + "/tools/analyze",
+            analyzeManagement: service + "/api/" + version + "/tools/analyzeManagement",
         }
     };
     exprots("okMock", okMock);

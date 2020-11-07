@@ -130,7 +130,7 @@ def navs(_):
             ]
         },
         {
-            'title': '用户配置',
+            'title': '人事管理',
             'href': '',
             'icon': '&#xe66f;',
             'spread': False,
@@ -138,12 +138,12 @@ def navs(_):
             'children': [
                 {
                     'display': True,
-                    'title': '用户列表',
+                    'title': '员工管理',
                     'href': 'menu/user/user.html',
                     'spread': False},
                 {
                     'display': True,
-                    'title': '项目列表',
+                    'title': '部门管理',
                     'href': 'menu/user/department.html',
                     'spread': False
                 }
@@ -159,7 +159,7 @@ def navs(_):
             'children': [
                 {
                     'display': True,
-                    'title': '知识库',
+                    'title': '知识广场',
                     'href': 'menu/repository/repository.html',
                     'spread': False
                 },
@@ -167,6 +167,22 @@ def navs(_):
                     'display': True,
                     'title': '我的文章',
                     'href': 'menu/repository/myrepository.html',
+                    'spread': False
+                }
+            ]
+        },
+        {
+            'title': '解析工具',
+            'href': '',
+            'fontFamily': 'ok-icon',
+            'icon': 'ok-icon ok-icon-repair',
+            'spread': False,
+            'display': True,
+            'children': [
+                {
+                    'display': True,
+                    'title': '日志解析',
+                    'href': 'menu/tools/analyze-log.html',
                     'spread': False
                 }
             ]
