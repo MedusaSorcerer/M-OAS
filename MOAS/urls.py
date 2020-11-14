@@ -41,6 +41,7 @@ router.register(f'api/v{SERVICE_VERSION}/attendance/abnormalAttendance', attenda
 router.register(f'api/v{SERVICE_VERSION}/attendance/holidayHandle', attendance.HolidayHandleView, basename='holidayHandle')
 router.register(f'api/v{SERVICE_VERSION}/report/report', report.ReportView)
 router.register(f'api/v{SERVICE_VERSION}/user/department', user.DepartmentView)
+router.register(f'api/v{SERVICE_VERSION}/user/role', user.RoleView)
 router.register(f'api/v{SERVICE_VERSION}/repository/repository', repository.RepositoryView)
 router.register(f'api/v{SERVICE_VERSION}/repository/myrepository', repository.MyRepositoryView)
 router.register(f'api/v{SERVICE_VERSION}/repository/draft', repository.DraftView)
@@ -50,6 +51,7 @@ router.register(f'api/v{SERVICE_VERSION}/tools/analyzeManagement', tools.Managem
 urlpatterns = [
     path(f'api/v{SERVICE_VERSION}/login', user.LoginView.as_view()),
     path(f'api/v{SERVICE_VERSION}/logout', user.LogoutView.as_view()),
+    path(f'api/v{SERVICE_VERSION}/refresh', user.RefreshAPIView.as_view()),
     path(f'api/v{SERVICE_VERSION}/change', user.UserChangeViewSet.as_view()),
     path(f'api/v{SERVICE_VERSION}/navs', user.UserNavsView.as_view()),
     path(f'api/v{SERVICE_VERSION}/dashboard/dashboard', dashboard.DashboardView.as_view()),

@@ -15,8 +15,8 @@ from django.db.models import Q
 
 from MOAS import settings
 from lib import m_rest_framework as rest
-from .models import UserModel, DepartmentModel
-from .views import workplace as get_workplace, navs
+from .models import UserModel, DepartmentModel, RoleModel
+from .views import workplace as get_workplace, navs, format_role
 
 jwt_response_payload_handler = rest.api_settings.JWT_RESPONSE_PAYLOAD_HANDLER
 
@@ -115,28 +115,29 @@ class UserChangeViewSet(rest.APIView):
         raise rest.ParseError(detail='会话已过期')
 
 
-class UserNoticeView(rest.APIView):
-    ...
-
-
 class UserNavsView(rest.APIView):
     def get(self, request, *args, **kwargs):
-        return rest.Response(data=navs(request.user.is_admin is True))
+        return rest.Response(data=navs(request.user.role.role if request.user.role else '[]'))
 
 
 class UserSerializerL(rest.ModelSerializer):
     department = rest.SerializerMethodField()
+    role = rest.SerializerMethodField()
 
     def get_department(self, obj):
         if obj.department: return obj.department.name
 
+    def get_role(self, obj):
+        if obj := obj.role: return obj.name
+
     class Meta:
         model = UserModel
-        fields = ('id', 'get_full_name', 'username', 'email', 'is_active', 'department', 'date_joined')
+        fields = ('id', 'get_full_name', 'username', 'email', 'is_active', 'department', 'date_joined', 'role')
 
 
 class UserSerializerR(rest.ModelSerializer):
     workplace = rest.SerializerMethodField()
+    role = rest.IntegerField(source='role_id')
 
     def get_workplace(self, obj):
         obj = obj.workplace
@@ -160,11 +161,13 @@ class UserSerializerR(rest.ModelSerializer):
             'workplace',
             'head_of_department',
             'work_management',
-            'is_admin',
+            'role',
         )
 
 
 class UserSerializerU(rest.ModelSerializer):
+    role = rest.IntegerField(source='role_id')
+
     class Meta:
         model = UserModel
         fields = (
@@ -177,11 +180,12 @@ class UserSerializerU(rest.ModelSerializer):
             'title',
             'head_of_department',
             'work_management',
-            'is_admin',
+            'role',
         )
 
 
 class UserSerializerC(rest.ModelSerializer):
+    role = rest.IntegerField(source='role_id')
 
     def validate_username(self, attrs):
         if not re.match(r'^[A-Za-z0-9-_.]+$', attrs):
@@ -196,7 +200,6 @@ class UserSerializerC(rest.ModelSerializer):
     def validate_password(self, attrs):
         if not re.match(r'^\S{6,16}$', attrs):
             raise rest.ValidationError('密码不合法')
-        print(make_password(attrs))
         return make_password(attrs)
 
     class Meta:
@@ -212,10 +215,10 @@ class UserSerializerC(rest.ModelSerializer):
             'email',
             'department',
             'title',
-            'is_admin',
             'is_active',
             'head_of_department',
             'work_management',
+            'role',
         )
 
 
@@ -357,5 +360,46 @@ class DepartmentView(rest.GenericViewSet, rest.ListModelMixin, rest.DestroyModel
         return rest.Response(status=rest.HTTP_201_CREATED, data={'name': name, 'leader': leader})
 
 
-class RoleView(rest.GenericViewSet):
-    ...
+class RoleSerializer(rest.ModelSerializer):
+    role = rest.SerializerMethodField(source='role')
+
+    def get_role(self, obj):
+        return json.loads(obj.role)
+
+    class Meta:
+        model = RoleModel
+        fields = ('id', 'role', 'name', 'admin')
+        read_only_fields = ('id', 'role', 'admin')
+
+
+class RoleSerializerU(rest.ModelSerializer):
+    class Meta:
+        model = RoleModel
+        fields = ('id', 'role', 'name', 'admin')
+        read_only_fields = ('id', 'name', 'admin')
+
+
+class RoleView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin, rest.DestroyModelMixin, rest.CreateModelMixin):
+    serializer_class = RoleSerializer
+    queryset = RoleModel.objects.all()
+
+    def list(self, request, *args, **kwargs):
+        role = request.user.role_id
+        response = super().list(request, *args, **kwargs)
+        response.data['self'] = role
+        return response
+
+    def update(self, request, *args, **kwargs):
+        partial = kwargs.pop('partial', False)
+        instance = self.get_object()
+        if not isinstance(request.data.get('role'), list): raise rest.ParseError(detail='规则参数格式错误')
+        serializer = RoleSerializerU(instance, data={'role': format_role(request.data.get('role'))}, partial=partial)
+        serializer.is_valid(raise_exception=True)
+        self.perform_update(serializer)
+        if getattr(instance, '_prefetched_objects_cache', None):
+            instance._prefetched_objects_cache = {}
+        return rest.Response(data=serializer.data)
+
+    def create(self, request, *args, **kwargs):
+        if self.queryset.filter(name__exact=request.data.get('name')): raise rest.ParseError(detail='角色名称已存在')
+        return super().create(request, *args, **kwargs)

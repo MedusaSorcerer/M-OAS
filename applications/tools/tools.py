@@ -38,18 +38,19 @@ def analyze_text(name, line, limit, fields, regex):
         return _result
 
     count, data = 0, list()
-    if os.path.getsize(r'c:\Users\Administrator\Desktop\a.log') > 1024 ** 3:
-        with open(os.path.join(BASE_DIR, 'applications', 'tools', 'tf', f'M{name}.py'), 'r', encoding='UTF-8') as f:
+    path = os.path.join(BASE_DIR, 'applications', 'tools', 'tf', f'M{name}.py')
+    if os.path.getsize(path) > 1024 ** 3:
+        with open(path, 'r', encoding='UTF-8') as f:
             for i in f:
                 count += 1
             f.close()
         for i in range(limit):
             line += 1
             if line > count: break
-            line_text = linecache.getline(os.path.join(BASE_DIR, 'applications', 'tools', 'tf', f'M{name}.py'), line)
+            line_text = linecache.getline(path, line)
             data.append(_(line_text))
     else:
-        with open(os.path.join(BASE_DIR, 'applications', 'tools', 'tf', f'M{name}.py'), 'r', encoding='UTF-8') as f:
+        with open(path, 'r', encoding='UTF-8') as f:
             lines = f.readlines()
             f.close()
         count = len(lines)

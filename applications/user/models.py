@@ -20,13 +20,13 @@ class PhoneRegexValidator(validators.RegexValidator):
 
 class RoleModel(models.Model):
     name = models.CharField(max_length=32, null=False, blank=False, unique=True)
-    role = models.CharField(max_length=128, null=False, blank=False)
+    role = models.CharField(max_length=800, null=False, blank=False, default='[]')
     create = models.DateTimeField(auto_now_add=True)
     admin = models.BooleanField(default=False)
 
     class Meta:
         db_table = 'moas_role'
-        ordering = ('-id',)
+        ordering = ('-admin', '-id')
 
 
 class DepartmentModel(models.Model):
@@ -50,7 +50,7 @@ class UserModel(AbstractUser):
     is_admin = models.BooleanField(default=False)
     user_secret = models.UUIDField(default=uuid4())
     email = models.EmailField(blank=True, null=True)
-    role = models.ManyToManyField(RoleModel)
+    role = models.ForeignKey(RoleModel, on_delete=models.SET_NULL, null=True)
     head_of_department = models.BooleanField(default=False)
     work_management = models.BooleanField(default=False)
     department = models.ForeignKey(DepartmentModel, on_delete=models.SET_NULL, null=True)
@@ -85,20 +85,37 @@ class UserModel(AbstractUser):
 def _():
     def _():
         import time
+        from .views import format_role
         time.sleep(2)
+
+        role_id = None
+        try:
+            role = RoleModel.objects.filter(admin__exact=True).first()
+            if not role:
+                role = RoleModel.objects.create(admin=True, name='系统管理(Administrator)', role=format_role([], True))
+            else:
+                RoleModel.objects.filter(admin__exact=True).update(role=format_role([], True))
+            role_id = role.id
+        except Exception as e:
+            print(e)
         try:
             from conf import conf
-            if not UserModel.objects.filter(is_admin__exact=True):
+            user_obj = UserModel.objects.filter(is_admin__exact=True)
+            if not user_obj:
                 UserModel.objects.create_user(
                     username=conf.ADMIN_USERNAME,
                     password=conf.ADMIN_PASSWORD,
                     email=conf.ADMIN_EMAIL,
                     is_admin=True,
+                    role_id=role_id,
                 )
-        except (Exception,):
-            pass
+            else:
+                user_obj.update(role_id=role_id)
+        except (Exception,) as e:
+            print(e)
 
     import _thread
     _thread.start_new_thread(_, ())
+
 
 _()

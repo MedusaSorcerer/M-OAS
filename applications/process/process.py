@@ -84,8 +84,6 @@ class ReviewProcessView(rest.UpdateModelMixin, rest.GenericViewSet):
                     try:
                         if str(content[int(i)][0]) == str(request.user.id):
                             content.pop(int(i))
-                        else:
-                            print(content[int(i)][0])
                     except IndexError:
                         ...
             if review: content.append([request.user.id, status, html.escape(review)])

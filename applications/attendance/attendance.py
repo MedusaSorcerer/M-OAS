@@ -90,7 +90,6 @@ class HolidayHandleView(rest.GenericViewSet):
             self.get_time(request.data.get('startDate'), request.data.get('startTime')),
             self.get_time(request.data.get('endDate'), request.data.get('endTime')),
         )
-        print(starttime, endtime)
         if starttime > endtime: raise rest.ParseError(detail='时间区间不合法')
         n = (_e - _s).days
         if request.data.get('startTime') == '1' and request.data.get('endTime') == '3':
