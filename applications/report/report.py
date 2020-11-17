@@ -5,7 +5,7 @@ import re
 from datetime import datetime
 
 from lib import m_rest_framework as rest
-from .models import ReportModel
+from .models import ReportModel, MonthlyReportModel
 
 
 class ReportSerializer(rest.ModelSerializer):
@@ -37,7 +37,7 @@ class ReportView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin
         date = datetime.now().strftime('%Y-%m-%d') if not request.query_params.get('date') else request.query_params.get('date')
         if not re.match(r'\d{4}-\d{2}-\d{2}', date): raise rest.ParseError(detail='时间格式错误，如 "2020-10-01" 格式')
         self.queryset = self.queryset.filter(
-            date__year=date.split('-')[0], date__month=date.split('-')[1], date__day=date.split('-')[2]
+            date__year=date.split('-')[0], date__month=date.split('-')[1], date__day=date.split('-')[2], person__department_id=request.user.department_id,
         )
         return super().list(request, *args, **kwargs)
 
@@ -74,3 +74,41 @@ class ReportView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin
             'person': f'{request.user.get_full_name()} ({request.user.username})',
             'content': queryset.first().content
         })
+
+
+class MonthlyReportSerializer(rest.ModelSerializer):
+    fullname = rest.CharField(source='person__get_fullname', read_only=True)
+
+    class Meta:
+        model = MonthlyReportModel
+        fields = ('person', 'content', 'date', 'fullname')
+        read_only_fields = ('fullname', 'update')
+
+
+class MonthlyReportSerializerU(rest.ModelSerializer):
+    class Meta:
+        model = MonthlyReportModel
+        fields = ('content', 'schedule', 'person')
+
+
+class MonthlyReportView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin, rest.CreateModelMixin):
+    serializer_class = MonthlyReportSerializer
+    queryset = MonthlyReportModel.objects.all()
+
+    def update(self, request, *args, **kwargs):
+        self.serializer_class = MonthlyReportSerializerU
+        request.data['person'] = request.user.id
+        return super().update(request, *args, **kwargs)
+
+    def create(self, request, *args, **kwargs):
+        data = {
+            'person_id': request.data.get(),
+            'content': request.data.get('content'),
+            'date': request.data.get('date'),
+        }
+        if re.search(r'^20\d\d(0[1-9]|1[0-2])$', data.get('date')): raise rest.ParseError(detail='填报日期格式错误')
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+        headers = self.get_success_headers(serializer.data)
+        return rest.Response(data=serializer.data, status=rest.HTTP_201_CREATED, headers=headers)

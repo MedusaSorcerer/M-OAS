@@ -40,6 +40,7 @@ router.register(f'api/v{SERVICE_VERSION}/attendance/attendance', attendance.Atte
 router.register(f'api/v{SERVICE_VERSION}/attendance/abnormalAttendance', attendance.AbnormalAttendanceView, basename='abnormalAttendance')
 router.register(f'api/v{SERVICE_VERSION}/attendance/holidayHandle', attendance.HolidayHandleView, basename='holidayHandle')
 router.register(f'api/v{SERVICE_VERSION}/report/report', report.ReportView)
+router.register(f'api/v{SERVICE_VERSION}/report/monthlyreport', report.MonthlyReportView)
 router.register(f'api/v{SERVICE_VERSION}/user/department', user.DepartmentView)
 router.register(f'api/v{SERVICE_VERSION}/user/role', user.RoleView)
 router.register(f'api/v{SERVICE_VERSION}/repository/repository', repository.RepositoryView)

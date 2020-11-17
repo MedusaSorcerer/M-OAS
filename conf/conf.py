@@ -12,6 +12,6 @@ MYSQL_PASSWORD = 'medusa@moas'
 ADMIN_USERNAME = 'admin'
 ADMIN_PASSWORD = 'moas@admin'
 ADMIN_EMAIL = 'admin@moas.com'
-SERVICE_VERSION = '1.3.0'
+SERVICE_VERSION = '1.4.0'
 SERVICE_DEBUG = True
 CACHE_TIMEOUT = 7 * 24 * 60 * 60
