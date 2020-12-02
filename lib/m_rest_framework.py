@@ -3,8 +3,6 @@
 import datetime
 import traceback
 
-from django.core.cache import cache
-from django.utils import timezone
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import routers
 from rest_framework import views, exceptions, response, viewsets, permissions, status, serializers, filters
@@ -12,8 +10,6 @@ from rest_framework.pagination import PageNumberPagination
 from rest_framework_jwt.serializers import JSONWebTokenSerializer, RefreshJSONWebTokenSerializer
 from rest_framework_jwt.settings import api_settings
 from rest_framework_jwt.views import JSONWebTokenAPIView
-
-from applications.user.models import UserModel
 
 AllowAny = permissions.AllowAny
 NotAuthenticated = exceptions.NotAuthenticated
@@ -32,11 +28,16 @@ ValidationError = serializers.ValidationError
 EmailField = serializers.EmailField
 IntegerField = serializers.IntegerField
 HTTP_200_OK = status.HTTP_200_OK
+PermissionDenied = exceptions.PermissionDenied
 
 
 class APIView(views.APIView):
     def dispatch(self, request, *args, **kwargs):
         super().dispatch(request, *args, **kwargs)
+        from applications.user.models import UserModel
+        from django.core.cache import cache
+        from django.utils import timezone
+
         if isinstance(user := request.user, UserModel):
             # django cache field -> user active number
             sign = datetime.datetime.now().strftime("%Y%m%d")
@@ -166,6 +167,7 @@ class Pagination(PageNumberPagination):
 
 
 __all__ = [
+    'PermissionDenied',
     'HTTP_200_OK',
     'IntegerField',
     'EmailField',

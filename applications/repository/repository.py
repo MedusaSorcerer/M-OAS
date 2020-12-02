@@ -35,6 +35,7 @@ class RepositoryView(rest.GenericViewSet, rest.ListModelMixin, rest.CreateModelM
     filter_backends = [rest.SearchFilter]
     pagination_class = rest.Pagination
     search_fields = ['title', 'author__first_name', 'author__last_name']
+    permission = {'m/6/1': '__all__'}
 
     def get_queryset(self):
         return self.queryset.filter(draft__exact=False)
@@ -58,6 +59,7 @@ class MyRepositoryView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateMode
     filter_backends = [rest.SearchFilter]
     pagination_class = rest.Pagination
     search_fields = ['title', 'author__first_name', 'author__last_name']
+    permission = {'m/6/2': '__all__'}
 
     def get_queryset(self):
         return self.queryset.filter(author__exact=self.request.user, draft__exact=False)
@@ -121,6 +123,7 @@ class DraftSerializerU(rest.ModelSerializer):
 class DraftView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin, rest.CreateModelMixin, rest.DestroyModelMixin, rest.RetrieveModelMixin):
     queryset = RepositoryModel.objects.filter(draft__exact=True)
     serializer_class = DraftSerializer
+    permission = {'m/6/2': '__all__'}
 
     def get_queryset(self):
         return self.queryset.filter(author_id__exact=self.request.user.id)

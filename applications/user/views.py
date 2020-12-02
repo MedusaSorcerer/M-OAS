@@ -69,7 +69,7 @@ def workplace(f=False):
 def get_permission(role: list, a_index, b_index=None):
     try:
         permission = role[a_index]
-        return permission['spread'] if not b_index else permission['children'][b_index]['spread']
+        return permission['spread'] if b_index is None else permission['children'][b_index]['spread']
     except (Exception,):
         return False
 
@@ -143,6 +143,22 @@ def navs(role):
                     'fontFamily': 'layui-icon',
                     'spread': False,
                     'id': 'm/4/1',
+                },
+                {
+                    'display': get_permission(role, 3, 1),
+                    'title': '工作月报',
+                    'href': 'menu/report/monthlyReport.html',
+                    'fontFamily': 'layui-icon',
+                    'spread': False,
+                    'id': 'm/4/2',
+                },
+                {
+                    'display': get_permission(role, 3, 2),
+                    'title': '项目工程',
+                    'href': 'menu/report/subject.html',
+                    'fontFamily': 'layui-icon',
+                    'spread': False,
+                    'id': 'm/4/3',
                 }
             ]
         },
@@ -162,14 +178,14 @@ def navs(role):
                     'id': 'm/5/1',
                 },
                 {
-                    'display': get_permission(role, 4, 2),
+                    'display': get_permission(role, 4, 1),
                     'title': '角色管理',
                     'href': 'menu/user/role.html',
                     'spread': False,
                     'id': 'm/5/3',
                 },
                 {
-                    'display': get_permission(role, 4, 1),
+                    'display': get_permission(role, 4, 2),
                     'title': '部门管理',
                     'href': 'menu/user/department.html',
                     'spread': False,
@@ -300,6 +316,16 @@ def format_role(role: list, admin: bool = False):
                     # 'title': '工作日报',
                     'spread': ('m/4' in role and 'm/4/1' in role) or admin,
                     'id': 'm/4/1'
+                },
+                {
+                    # 'title': '工作月报',
+                    'spread': ('m/4' in role and 'm/4/2' in role) or admin,
+                    'id': 'm/4/2'
+                },
+                {
+                    # 'title': '项目工程',
+                    'spread': ('m/4' in role and 'm/4/3' in role) or admin,
+                    'id': 'm/4/3'
                 }
             ]
         },

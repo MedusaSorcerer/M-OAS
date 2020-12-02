@@ -17,6 +17,8 @@ HOLIDAY = {
 
 
 class AttendanceView(rest.GenericViewSet):
+    permission = {'m/3/1': '__all__'}
+
     def list(self, request, *args, **kwargs):
         data = list()
         now = datetime.now()
@@ -42,6 +44,8 @@ class AttendanceView(rest.GenericViewSet):
 
 
 class AbnormalAttendanceView(rest.GenericViewSet):
+    permission = {'m/3/1': '__all__'}
+
     @staticmethod
     def demo():
         data = list()
@@ -70,6 +74,8 @@ class AbnormalAttendanceView(rest.GenericViewSet):
 
 
 class HolidayHandleView(rest.GenericViewSet):
+    permission = {'m/3/1': '__all__'}
+
     def list(self, request, *args, **kwargs):
         return rest.Response(data=[{'id': k, 'name': v} for k, v in HOLIDAY.items()])
 

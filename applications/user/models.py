@@ -20,7 +20,7 @@ class PhoneRegexValidator(validators.RegexValidator):
 
 class RoleModel(models.Model):
     name = models.CharField(max_length=32, null=False, blank=False, unique=True)
-    role = models.CharField(max_length=800, null=False, blank=False, default='[]')
+    role = models.TextField(default='[]')
     create = models.DateTimeField(auto_now_add=True)
     admin = models.BooleanField(default=False)
 

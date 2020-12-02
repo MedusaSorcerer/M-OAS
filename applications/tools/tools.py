@@ -84,6 +84,8 @@ def analyze_engine(tool, limit, page, fields, regex):
 
 
 class AnalyzeTool(rest.GenericViewSet):
+    permission = {'m/7/1': '__all__'}
+
     def create(self, request, *args, **kwargs):
         file, name, type_, fields, alias, regex = (
             request.FILES.get('file'), str(uuid1()).replace('-', ''),
@@ -163,6 +165,7 @@ class AnalyzeTool(rest.GenericViewSet):
 
 
 class ManagementMappingRulerView(rest.GenericViewSet, rest.UpdateModelMixin):
+    permission = {'m/7/1': '__all__'}
 
     def update(self, request, *args, **kwargs):
         type_, regex, fields, name = request.data.get('type'), request.data.get('regex'), request.data.get('fields'), kwargs.get('pk')

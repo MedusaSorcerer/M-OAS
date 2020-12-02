@@ -4,8 +4,6 @@ import html
 import json
 import re
 
-from django.core import serializers
-
 from applications.user.models import UserModel
 from lib import m_rest_framework as rest
 from .models import ProcessModel
@@ -67,6 +65,7 @@ class HandleProcessSerializerU(rest.Serializer):
 class ReviewProcessView(rest.UpdateModelMixin, rest.GenericViewSet):
     queryset = ProcessModel.objects.all()
     serializer_class = HandleProcessSerializerU
+    permission = {'m/2/2': '__all__'}
 
     def update(self, request, *args, **kwargs):
         if instance := self.queryset.filter(id__exact=kwargs.get('pk'), at_leader__regex=f'"{self.request.user.id}"').first():
@@ -108,6 +107,11 @@ class ProcessView(rest.DestroyModelMixin, rest.ListModelMixin, rest.CreateModelM
     filter_backends = [rest.SearchFilter, rest.DjangoFilterBackend]
     search_fields = ['id', 'title']
     filterset_fields = ['status']
+    permission = {}
+
+    def get_permissions(self):
+        self.permission = {'m/2/1': '__all__'} if 'submitProcess' in self.request.path else {'m/2/2': '__all__'}
+        return super().get_permissions()
 
     def get_serializer_class(self):
         if 'submitProcess' in self.request.path:
@@ -148,10 +152,18 @@ class ProcessView(rest.DestroyModelMixin, rest.ListModelMixin, rest.CreateModelM
         return rest.Response()
 
 
-class AtLeaderView(rest.GenericViewSet, rest.ListModelMixin, rest.RetrieveModelMixin):
-    queryset = ProcessModel.objects.all()
+class AtLeaderSerializer(rest.ModelSerializer):
+    name = rest.SerializerMethodField()
 
-    def list(self, request, *args, **kwargs):
-        serializer = serializers.serialize('json', UserModel.objects.all(), fields=('username', 'id'))
-        data = [{'value': i['pk'], 'name': i['fields']['username']} for i in json.loads(serializer)]
-        return rest.Response(data=data)
+    def get_name(self, obj):
+        return f'{obj.get_full_name()}({obj.username})'
+
+    class Meta:
+        model = UserModel
+        fields = ('name', 'id')
+
+
+class AtLeaderView(rest.GenericViewSet, rest.ListModelMixin):
+    queryset = UserModel.objects.all()
+    permission = {'m/2/1': ['list'], 'm/2/2': ['list']}
+    serializer_class = AtLeaderSerializer

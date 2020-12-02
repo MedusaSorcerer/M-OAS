@@ -93,6 +93,7 @@ class UserChangeSerializer(rest.Serializer):
 class UserChangeViewSet(rest.APIView):
     queryset = UserModel.objects.all()
     serializer_class = UserChangeSerializer
+    permission = {'m/8/1': '__all__'}
 
     def put(self, request, *args, **kwargs):
         try:
@@ -227,6 +228,7 @@ class UserView(rest.GenericViewSet, rest.ListModelMixin, rest.RetrieveModelMixin
     pagination_class = rest.Pagination
     filter_backends = [rest.SearchFilter]
     search_fields = ['username', 'first_name', 'last_name']
+    permission = {'m/5/1': '__all__', 'm/4/3': ['list'], 'm/5/2': ['list']}
 
     def list(self, request, *args, **kwargs):
         self.serializer_class = UserSerializerL
@@ -288,6 +290,7 @@ class UserBatchSerializer(rest.ModelSerializer):
 
 class UserBatchView(rest.GenericViewSet, rest.UpdateModelMixin, rest.DestroyModelMixin):
     queryset = UserModel.objects.all()
+    permission = {'m/5/1': '__all__'}
 
     def verify(self):
         ids = list(set(self.kwargs.get('pk').split(',')))
@@ -344,6 +347,7 @@ class DepartmentView(rest.GenericViewSet, rest.ListModelMixin, rest.DestroyModel
     pagination_class = rest.Pagination
     filter_backends = [rest.SearchFilter]
     search_fields = ['name']
+    permission = {'m/5/2': '__all__', 'm/5/1': ['list']}
 
     def create(self, request, *args, **kwargs):
         name, leader = request.data.get('name'), request.data.get('leader')
@@ -382,6 +386,7 @@ class RoleSerializerU(rest.ModelSerializer):
 class RoleView(rest.GenericViewSet, rest.ListModelMixin, rest.UpdateModelMixin, rest.DestroyModelMixin, rest.CreateModelMixin):
     serializer_class = RoleSerializer
     queryset = RoleModel.objects.all()
+    permission = {'m/5/3': '__all__', 'm/5/1': ['list']}
 
     def list(self, request, *args, **kwargs):
         role = request.user.role_id

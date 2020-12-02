@@ -38,6 +38,7 @@ class PersonalSettingSerializer(rest.Serializer):
 
 
 class PersonalSettingView(rest.APIView):
+    permission = {'m/8/1': '__all__'}
 
     def get(self, request, *args, **kwargs):
         instance = request.user
@@ -69,11 +70,15 @@ class PersonalSettingView(rest.APIView):
 
 
 class SecuritySettingView(rest.APIView):
+    permission = {'m/8/2': '__all__'}
+
     def get(self, request, *args, **kwargs):
         return rest.Response(data={'username': request.user.username})
 
 
 class SystemSettingView(rest.APIView):
+    permission = {'m/8/3': '__all__'}
+
     def get(self, request, *args, **kwargs):
         file = open(os.path.join(BASE_DIR, 'conf', 'conf.json'), 'r', encoding='UTF-8')
         info = file.read()

@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'rest_framework',
+    'djcelery',
     'applications.user',
     'applications.tools',
     'applications.crontab',
@@ -144,7 +145,7 @@ JWT_AUTH = {
 REST_FRAMEWORK = {
     'DEFAULT_RENDERER_CLASSES': ('rest_framework.renderers.JSONRenderer',),
     'DEFAULT_AUTHENTICATION_CLASSES': ('rest_framework_jwt.authentication.JSONWebTokenAuthentication',),
-    'DEFAULT_PERMISSION_CLASSES': ('rest_framework.permissions.IsAuthenticated',),
+    'DEFAULT_PERMISSION_CLASSES': ('lib.m_rest_framework_permission.CustomPermission',),
     'EXCEPTION_HANDLER': 'lib.m_rest_framework.custom_exception_handler',
 }
 
